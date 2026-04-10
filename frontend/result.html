@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Digital Twin | Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { 
+            --ucf-yellow: #ffcc00; 
+            --ucf-bg: #fdfae7; 
+        }
+        
+        body { 
+            background-color: var(--ucf-bg); 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            margin: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .logo-top-left { position: fixed; top: 20px; left: 20px; width: 80px; z-index: 1000; }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 450px 450px;
+            gap: 30px;
+            margin-top: 20px;
+            max-width: 1000px;
+        }
+
+        .info-card { 
+            background: var(--ucf-yellow); 
+            padding: 2.5rem; 
+            border-radius: 40px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+
+        .advice-card {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border: 2px solid var(--ucf-yellow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gpa-big { font-size: 5.5rem; font-weight: 900; margin: 5px 0; color: #000; line-height: 1; }
+        
+        .stat-label {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metrics-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .metric-value { font-size: 1.5rem; font-weight: 800; }
+
+        /* Mascot Container with Floating AND Rotation */
+        .mascot-container {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; align-items: center;
+            z-index: 1001; 
+            animation: floatAndRotate 4s ease-in-out infinite;
+        }
+
+        @keyframes floatAndRotate {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(5deg); }
+            50% { transform: translateY(-20px) rotate(0deg); }
+            75% { transform: translateY(-10px) rotate(-5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .knightro-img { width: 130px; mix-blend-mode: darken; }
+        
+        .speech-bubble {
+            background: white; border: 3px solid #000; border-radius: 20px;
+            padding: 12px; margin-bottom: 10px; font-weight: bold;
+            max-width: 170px; text-align: center; box-shadow: 5px 5px 0px #000;
+        }
+
+        .home-btn {
+            margin-top: 40px; padding: 15px 40px; background: #000; color: var(--ucf-yellow);
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            transition: 0.3s;
+        }
+        .home-btn:hover { background: #333; }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='pegasus.png') }}" class="logo-top-left">
+
+    <h1 style="font-weight: 800; margin-bottom: 10px;">Simulation Complete</h1>
+    <p style="color: #666; margin-bottom: 30px;">Analyzing data for {{ student.student_name }}</p>
+
+    <div class="dashboard-container">
+        <div class="info-card">
+            <span class="stat-label">Current Forecast</span>
+            <div class="gpa-big">{{ prediction.projected_gpa }}</div>
+            <p style="font-weight: bold;">Range: {{ prediction.projected_gpa_range }}</p>
+
+            <div class="metrics-row">
+                <div>
+                    <span class="stat-label">Academic Risk</span><br>
+                    <span class="metric-value">{{ prediction.risk_score }}%</span>
+                </div>
+                <div>
+                    <span class="stat-label">Burnout Probability</span><br>
+                    <span class="metric-value">{{ prediction.burnout_probability }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="advice-card">
+            <h3 style="margin-top: 0; color: #000;">Your Optimal Digital Twin:</h3>
+            <div style="line-height: 1.6; color: #444;">
+                {% set gpa = prediction.projected_gpa|float %}
+                {% set burnout = prediction.burnout_probability|float %}
+
+                <p>
+                {% if burnout > 50 %}
+                    <strong>⚠️ High Burnout Protocol:</strong> Your Twin is detecting significant strain. 
+                    {% if gpa >= 3.5 %}
+                        Even with your high GPA, this pace is unsustainable. You are at risk of a late-semester crash. Prioritize sleep over extra study hours immediately.
+                    {% elif gpa >= 2.6 %}
+                        Your performance is stable, but your stress levels are cannibalizing your focus. We recommend dropping one non-essential commitment.
+                    {% else %}
+                        CRITICAL: Low performance and high burnout suggest you are overwhelmed. Prioritize mental health cycles to reset your trajectory.
+                    {% endif %}
+                {% else %}
+                    <strong>✅ Performance Optimization:</strong> Your Twin shows manageable stress levels.
+                    {% if gpa >= 3.5 %}
+                        You are in the "Elite Tier." Your Twin suggests focusing on networking and internship prep for Summer 2026.
+                    {% elif gpa >= 2.6 %}
+                        You are in a healthy growth phase. To push into the 3.5+ bracket, increase your active recall sessions by 15%.
+                    {% else %}
+                        You have the bandwidth to improve. You can safely increase your study volume by 5-10 hours a week to bridge the GPA gap.
+                    {% endif %}
+                {% endif %}
+                </p>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <ul style="padding-left: 20px; margin: 0;">
+                    <li style="margin-bottom: 10px;"><strong>Course Load:</strong> {% if burnout > 50 %}Take a lighter load next term to recover.{% else %}You can maintain your current credit load.{% endif %}</li>
+                    <li style="margin-bottom: 10px;"><strong>Sleep Target:</strong> {% if burnout > 50 %}7.5+ hours (Mandatory){% else %}6.5+ hours (Recommended){% endif %}</li>
+                    <li style="margin-bottom: 10px;"><strong>Twin Insight:</strong> {{ prediction.recommendations[0] }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="home-btn">RE-INITIALIZE SIMULATION</a>
+
+    <div class="mascot-container">
+        <div class="speech-bubble">
+            {% if gpa >= 3.5 %}
+                "Charge On! That's a golden GPA! Shining brighter than a sunny day at the Reflection Pond."
+            {% elif gpa >= 2.6 %}
+                "Solid work, Knight. You're holding the line just like the defense at the Bounce House!"
+            {% else %}
+                "Even the best Knights need the John C Hitt Library. Let's hit the books!"
+            {% endif %}
+        </div>
+        <img src="{{ url_for('static', filename='knightro.png') }}" class="knightro-img">
+    </div>
+
+    <script>
+        // Get the GPA from Jinja
+        const finalGpa = parseFloat("{{ prediction.projected_gpa }}");
+        
+        // Define colors: Base Gold/Black + Dynamic Red or Green
+        let confettiColors = ['#ffcc00', '#000000']; // Default UCF
+        
+        if (finalGpa > 3.0) {
+            // Green for > 3.0
+            confettiColors.push('#22c55e', '#166534'); 
+        } else {
+            // Red for <= 3.0
+            confettiColors.push('#ef4444', '#991b1b');
+        }
+
+        var end = Date.now() + 3000;
+        (function frame() {
+          confetti({ 
+              particleCount: 4, 
+              angle: 60, 
+              spread: 55, 
+              origin: { x: 0 }, 
+              colors: confettiColors 
+          });
+          confetti({ 
+              particleCount: 4, 
+              angle: 120, 
+              spread: 55, 
+              origin: { x: 1 }, 
+              colors: confettiColors 
+          });
+          
+          if (Date.now() < end) { requestAnimationFrame(frame); }
+        }());
+    </script>
+</body>
+</html>
