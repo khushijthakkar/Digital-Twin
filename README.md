@@ -1,4 +1,4 @@
-# Digital Twins
+# Digital Twin
 
 A Flask-based web application that simulates a student's academic trajectory using a personalized "Digital Twin" model.
 
