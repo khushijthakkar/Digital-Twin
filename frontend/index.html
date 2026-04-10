@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Digital Twin | UCF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root { --ucf-yellow: #ffcc00; --ucf-bg: #fdfae7; }
+        body { 
+            background-color: var(--ucf-bg); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 20px;
+        }
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 30px; 
+            max-width: 850px; 
+            margin: 2rem auto; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.07); 
+        }
+        h1 { text-align: center; font-size: 2rem; margin-bottom: 30px; }
+        h3 { 
+            border-bottom: 3px solid var(--ucf-yellow); 
+            padding-bottom: 8px; 
+            margin-top: 30px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            margin: 20px 0; 
+        }
+        .course-box { 
+            background: #fcfcfc; 
+            padding: 15px; 
+            border-radius: 15px; 
+            border: 1px solid #eee; 
+            transition: transform 0.2s;
+        }
+        .course-box:hover { transform: translateY(-3px); border-color: var(--ucf-yellow); }
+        
+        .btn { 
+            background: #000; 
+            color: #fff;
+            width: 100%; 
+            padding: 1.2rem; 
+            border: none; 
+            border-radius: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 1.1rem; 
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background: #333; transform: scale(1.02); }
+        
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 8px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box; 
+            font-family: inherit;
+        }
+        label { font-size: 0.85rem; font-weight: 600; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Academic <strong>Outcome Predictor</strong></h1>
+        <form action="/run-simulation" method="POST">
+            
+            <label>Student Name</label>
+            <input type="text" name="student_name" placeholder="Enter your name" required>
+
+            <h3>Step 1: Baseline & Goals</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div>
+                    <label>Current Cumulative GPA</label>
+                    <input type="number" step="0.01" name="current_gpa" placeholder="4.0" required>
+                </div>
+                <div>
+                    <label>Total Credits Earned</label>
+                    <input type="number" name="total_credits_earned" placeholder="50" required>
+                </div>
+                <div>
+                    <label>Target GPA Goal</label>
+                    <input type="number" step="0.01" name="target_gpa" placeholder="e.g. 3.85" required>
+                </div>
+            </div>
+
+            <h3>Step 2: Current Semester</h3>
+            <div class="grid">
+                {% for i in range(6) %}
+                <div class="course-box">
+                    <label>Course {{ i + 1 }} Grade</label>
+                    <select name="grades[]">
+                        <option value="">- Select Grade -</option>
+                        <option value="4.0">A (4.0)</option>
+                        <option value="3.0">B (3.0)</option>
+                        <option value="2.0">C (2.0)</option>
+                        <option value="1.0">D (1.0)</option>
+                        <option value="0.0">F (0.0)</option>
+                    </select>
+                    <label style="display:block; margin-top:10px;">Credits</label>
+                    <input type="number" name="credits[]" placeholder="3">
+                </div>
+                {% endfor %}
+            </div>
+
+            <h3>Step 3: Lifestyle Factors</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Work Hours/Week</label>
+                    <input type="number" name="work_hours" value="15">
+                </div>
+                <div>
+                    <label>Stress Level (1-10)</label>
+                    <input type="number" name="stress" min="1" max="10" value="5">
+                </div>
+                <div>
+                    <label>Past Failed Courses</label>
+                    <input type="number" name="failed" value="0">
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Run Digital Twin Forecast</button>
+        </form>
+    </div>
+</body>
+</html>
