@@ -2,71 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADT | Student Survey</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Academic Digital Twin | Home</title>
+    <style>
+        :root { 
+            --ucf-gold: #ffcc00; 
+            --ucf-bg: #fdfae7; 
+        }
+        
+        body { 
+            background-color: var(--ucf-bg); 
+            /* Clean sans-serif font to match the rest of your application */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333; 
+            margin: 0; 
+            overflow: hidden;
+        }
+        
+        .logo-top-left { 
+            position: fixed; 
+            top: 20px; 
+            left: 20px; 
+            width: 100px; 
+            z-index: 1000;
+        }
+
+        .container { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            text-align: center; 
+            padding: 0 15%; 
+        }
+        
+        h1 { 
+            font-size: 3.5rem; 
+            color: #000; 
+            margin-bottom: 20px; 
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        #typewriter { 
+            font-size: 1.4rem; 
+            line-height: 1.6; 
+            min-height: 120px; 
+            color: #444; 
+            max-width: 850px;
+            font-weight: 500; 
+        }
+        
+        .start-btn { 
+            margin-top: 40px; 
+            padding: 18px 45px; 
+            background: #000; 
+            color: var(--ucf-gold); 
+            text-decoration: none; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            opacity: 0; 
+            transition: transform 0.3s ease, background 0.3s ease;
+            animation: fadeIn 1s forwards 5s; /* Button appears after typing finishes */
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            background: #222;
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+    </style>
 </head>
-<body class="survey-page">
-    <header class="top-nav">
-        <a href="/" class="pill-btn">← Back</a>
-    </header>
-    <main class="survey-container">
-        <form action="/run-simulation" method="POST">
-            <h1>Initialize Your Twin</h1>
-            
-            <fieldset>
-                <legend>1. Academic Profile</legend>
-                <div class="form-group">
-                    <label>Student Name</label>
-                    <input type="text" name="student_name" placeholder="Alex Knight" required>
-                </div>
-                <div class="form-group">
-                    <label>Current Cumulative GPA</label>
-                    <input type="number" name="gpa" step="0.01" min="0" max="4" required>
-                </div>
-                <div class="form-group">
-                    <label>Failed Courses (Historical)</label>
-                    <input type="number" name="failed" min="0" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Retaking any courses?</label>
-                    <div class="toggle-group">
-                        <input type="radio" name="retake" value="1"> Yes
-                        <input type="radio" name="retake" value="0" checked> No
-                    </div>
-                </div>
-            </fieldset>
+<body>
+    <img src="{{ url_for('static', filename='pegasus.png') }}" class="logo-top-left" alt="UCF Pegasus">
 
-            <fieldset>
-                <legend>2. Daily Variables</legend>
-                <div class="form-group">
-                    <label>Sleep (h/night): <span id="s-val">7</span></label>
-                    <input type="range" name="sleep" min="3" max="10" step="0.5" value="7" oninput="document.getElementById('s-val').innerText = this.value">
-                </div>
-                <div class="form-group">
-                    <label>Stress Level (1-10): <span id="st-val">5</span></label>
-                    <input type="range" name="stress" min="1" max="10" value="5" oninput="document.getElementById('st-val').innerText = this.value">
-                </div>
-            </fieldset>
+    <div class="container">
+        <h1> <strong>Digital Twin</strong></h1>
+        <div id="typewriter"></div>
+        <a href="/simulator" class="start-btn">INITIALIZE SIMULATION</a>
+    </div>
 
-            <fieldset>
-                <legend>3. External Load</legend>
-                <div class="form-group">
-                    <label>Work Hours per Week</label>
-                    <input type="number" name="work_hours" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Semester Difficulty (1-5)</label>
-                    <input type="number" name="difficulty" min="1" max="5" value="3">
-                </div>
-                <div class="form-group">
-                    <label>Extracurricular (Hours/Week)</label>
-                    <input type="number" name="extra" value="0">
-                </div>
-            </fieldset>
+    <script>
+        const text = "Welcome to the future of academic planning. Our Digital Twin leverages your data to simulate semester outcomes in seconds. Identify risks, optimize your GPA, and protect your mental well-being with precision. Go Knights, Charge On!";
+        
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                i++;
+                // 30ms provides a smooth, professional reading pace
+                setTimeout(typeWriter, 30); 
+            }
+        }
 
-            <button type="submit" class="cta-btn">Run Simulation</button>
-        </form>
-    </main>
+        // Starts the simulation once the page loads
+        window.onload = typeWriter;
+    </script>
 </body>
 </html>
