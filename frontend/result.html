@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Academic Digital Twin | Results</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
             --ucf-yellow: #ffcc00; 
@@ -21,7 +22,7 @@
             padding: 40px 20px;
         }
 
-        .logo-top-left { position: fixed; top: 20px; left: 20px; width: 80px; z-index: 1000; }
+        .logo-top-left { position: fixed; top: 30px; left: 20px; width: 80px; z-index: 1000; }
 
         .dashboard-container {
             display: grid;
@@ -70,9 +71,33 @@
 
         .metric-value { font-size: 1.5rem; font-weight: 800; }
 
-        /* Mascot Container with Floating AND Rotation */
+        /* Button Styling */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            gap: 20px;
+            margin-top: 40px;
+            align-items: center;
+        }
+
+        .home-btn, .chat-btn {
+            padding: 15px 40px; 
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #000;
+            color: var(--ucf-yellow);
+        }
+        
+        .home-btn:hover, .chat-btn:hover { background: #333; }
+
+        /* Mascot Container */
         .mascot-container {
-            position: fixed; bottom: 30px; right: 30px;
+            position: fixed; bottom: 10px; right: 30px;
             display: flex; flex-direction: column; align-items: center;
             z-index: 1001; 
             animation: floatAndRotate 4s ease-in-out infinite;
@@ -80,9 +105,7 @@
 
         @keyframes floatAndRotate {
             0% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(5deg); }
             50% { transform: translateY(-20px) rotate(0deg); }
-            75% { transform: translateY(-10px) rotate(-5deg); }
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
@@ -94,15 +117,85 @@
             max-width: 170px; text-align: center; box-shadow: 5px 5px 0px #000;
         }
 
-        .home-btn {
-            margin-top: 40px; padding: 15px 40px; background: #000; color: var(--ucf-yellow);
-            text-decoration: none; border-radius: 50px; font-weight: bold;
-            transition: 0.3s;
+        /* Chat Modal */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            top: 5px; 
+            right: 5px;
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 2px solid #000;
+            flex-direction: column;
+            z-index: 1002;
+            overflow: hidden;
         }
-        .home-btn:hover { background: #333; }
+
+        .chat-header {
+            background: #000;
+            color: var(--ucf-yellow);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .chat-history {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f9f9f9;
+        }
+
+        .msg { padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; max-width: 85%; }
+        .user-msg { background: var(--ucf-yellow); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .ai-msg { background: #eaeaea; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; }
+
+        .chat-input-container { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; }
+        .chat-input-container input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .chat-input-container button { background: #000; color: var(--ucf-yellow); border: none; border-radius: 20px; padding: 0 15px; margin-left: 10px; cursor: pointer; font-weight: bold; }
+
+        /* Battery/Burnout UI */
+        .battery-container {
+            width: 40px;
+            height: 80px;
+            border: 3px solid #333;
+            border-radius: 5px;
+            position: relative;
+            margin: 10px auto;
+            background: #fff;
+        }
+        
+        .battery-container::before {
+            content: '';
+            position: absolute;
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 4px;
+            background: #333;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .battery-level {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-radius: 2px;
+            transition: height 0.5s ease;
+        }
     </style>
 </head>
 <body>
+    {% set gpa = prediction.projected_gpa|float %}
+
     <img src="{{ url_for('static', filename='pegasus.png') }}" class="logo-top-left">
 
     <h1 style="font-weight: 800; margin-bottom: 10px;">Simulation Complete</h1>
@@ -115,13 +208,19 @@
             <p style="font-weight: bold;">Range: {{ prediction.projected_gpa_range }}</p>
 
             <div class="metrics-row">
-                <div>
+                <div style="text-align: center;">
                     <span class="stat-label">Academic Risk</span><br>
                     <span class="metric-value">{{ prediction.risk_score }}%</span>
+                    <div style="width: 120px; height: 60px; margin: 10px auto 0;">
+                        <canvas id="riskGauge"></canvas>
+                    </div>
                 </div>
-                <div>
+                <div style="text-align: center;">
                     <span class="stat-label">Burnout Probability</span><br>
                     <span class="metric-value">{{ prediction.burnout_probability }}%</span>
+                    <div class="battery-container">
+                        <div id="batteryLevel" class="battery-level"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,42 +228,53 @@
         <div class="advice-card">
             <h3 style="margin-top: 0; color: #000;">Your Optimal Digital Twin:</h3>
             <div style="line-height: 1.6; color: #444;">
-                {% set gpa = prediction.projected_gpa|float %}
-                {% set burnout = prediction.burnout_probability|float %}
-
                 <p>
-                {% if burnout > 50 %}
-                    <strong>⚠️ High Burnout Protocol:</strong> Your Twin is detecting significant strain. 
-                    {% if gpa >= 3.5 %}
-                        Even with your high GPA, this pace is unsustainable. You are at risk of a late-semester crash. Prioritize sleep over extra study hours immediately.
-                    {% elif gpa >= 2.6 %}
-                        Your performance is stable, but your stress levels are cannibalizing your focus. We recommend dropping one non-essential commitment.
-                    {% else %}
-                        CRITICAL: Low performance and high burnout suggest you are overwhelmed. Prioritize mental health cycles to reset your trajectory.
-                    {% endif %}
-                {% else %}
-                    <strong>✅ Performance Optimization:</strong> Your Twin shows manageable stress levels.
-                    {% if gpa >= 3.5 %}
-                        You are in the "Elite Tier." Your Twin suggests focusing on networking and internship prep for Summer 2026.
-                    {% elif gpa >= 2.6 %}
-                        You are in a healthy growth phase. To push into the 3.5+ bracket, increase your active recall sessions by 15%.
-                    {% else %}
-                        You have the bandwidth to improve. You can safely increase your study volume by 5-10 hours a week to bridge the GPA gap.
-                    {% endif %}
-                {% endif %}
+                    <strong>✅ Twin Insight:</strong> {{ prediction.recommendations[0] }}
                 </p>
 
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                
+                <p><strong>Detailed Analysis:</strong></p>
                 <ul style="padding-left: 20px; margin: 0;">
-                    <li style="margin-bottom: 10px;"><strong>Course Load:</strong> {% if burnout > 50 %}Take a lighter load next term to recover.{% else %}You can maintain your current credit load.{% endif %}</li>
-                    <li style="margin-bottom: 10px;"><strong>Sleep Target:</strong> {% if burnout > 50 %}7.5+ hours (Mandatory){% else %}6.5+ hours (Recommended){% endif %}</li>
-                    <li style="margin-bottom: 10px;"><strong>Twin Insight:</strong> {{ prediction.recommendations[0] }}</li>
+                    <li style="margin-bottom: 10px;">
+                        <strong>Work-Life Balance:</strong> 
+                        {% if student.work_hours|float <= 15 and student.stress|float <= 5 %}
+                            Optimized. Your schedule is currently sustainable.
+                        {% else %}
+                            At Capacity. Monitor your stress levels closely.
+                        {% endif %}
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <strong>GPA Trajectory:</strong> 
+                        {% if gpa >= student.current_gpa|float %}
+                            Positive Growth. Your Digital Twin is expanding.
+                        {% else %}
+                            Maintenance Mode. Protective measures suggested.
+                        {% endif %}
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <a href="/" class="home-btn">RE-INITIALIZE SIMULATION</a>
+    <div class="action-buttons">
+        <a href="/simulator" class="home-btn">RE-INITIALIZE SIMULATION</a>
+        <button onclick="toggleChat()" class="chat-btn">CONSULT YOUR DIGITAL TWIN</button>
+    </div>
+
+    <div id="chat-modal" class="chat-modal">
+        <div class="chat-header">
+            <h3>Digital Twin Advisor</h3>
+            <button onclick="toggleChat()" class="close-btn">&times;</button>
+        </div>
+        <div id="chat-history" class="chat-history">
+            <div class="msg ai-msg">Hi {{ student.student_name }}! How can I help you adjust your strategy?</div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
     <div class="mascot-container">
         <div class="speech-bubble">
@@ -180,39 +290,83 @@
     </div>
 
     <script>
-        // Get the GPA from Jinja
-        const finalGpa = parseFloat("{{ prediction.projected_gpa }}");
+        // Inject Python data safely
+        const studentData = {{ student | tojson | safe }};
+        const predictionData = {{ prediction | tojson | safe }};
+
+        // Initialize UI Elements
+        const riskScore = parseFloat(predictionData.risk_score);
+        const burnoutScore = parseFloat(predictionData.burnout_probability);
+
+        // Battery logic
+        const batteryFill = document.getElementById('batteryLevel');
+        batteryFill.style.height = `${burnoutScore}%`;
+        batteryFill.style.backgroundColor = burnoutScore > 60 ? '#ef4444' : (burnoutScore > 30 ? '#f59e0b' : '#22c55e');
+
+        // Gauge chart logic
+        const ctx = document.getElementById('riskGauge').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [riskScore, 100 - riskScore],
+                    backgroundColor: [riskScore > 60 ? '#ef4444' : (riskScore > 30 ? '#f59e0b' : '#22c55e'), '#e5e7eb'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                circumference: 180, rotation: 270, cutout: '75%',
+                plugins: { tooltip: { enabled: false } },
+                maintainAspectRatio: false
+            }
+        });
+
+        // Confetti logic
+        const finalGpaNum = parseFloat(predictionData.projected_gpa);
+        let colors = finalGpaNum >= parseFloat(studentData.current_gpa) ? ['#ffcc00', '#000000', '#22c55e'] : ['#ef4444', '#000000'];
         
-        // Define colors: Base Gold/Black + Dynamic Red or Green
-        let confettiColors = ['#ffcc00', '#000000']; // Default UCF
-        
-        if (finalGpa > 3.0) {
-            // Green for > 3.0
-            confettiColors.push('#22c55e', '#166534'); 
-        } else {
-            // Red for <= 3.0
-            confettiColors.push('#ef4444', '#991b1b');
+        var end = Date.now() + 2000;
+        (function frame() {
+          confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+          confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+
+        // Chat logic
+        function toggleChat() {
+            const modal = document.getElementById('chat-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        var end = Date.now() + 3000;
-        (function frame() {
-          confetti({ 
-              particleCount: 4, 
-              angle: 60, 
-              spread: 55, 
-              origin: { x: 0 }, 
-              colors: confettiColors 
-          });
-          confetti({ 
-              particleCount: 4, 
-              angle: 120, 
-              spread: 55, 
-              origin: { x: 1 }, 
-              colors: confettiColors 
-          });
-          
-          if (Date.now() < end) { requestAnimationFrame(frame); }
-        }());
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const message = inputField.value.trim();
+            if (!message) return;
+
+            const history = document.getElementById('chat-history');
+            history.innerHTML += `<div class="msg user-msg">${message}</div>`;
+            inputField.value = '';
+            
+            const loadingId = 'loading-' + Date.now();
+            history.innerHTML += `<div id="${loadingId}" class="msg ai-msg">Thinking...</div>`;
+            history.scrollTop = history.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: message, student: studentData, prediction: predictionData })
+                });
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+                history.innerHTML += `<div class="msg ai-msg">${data.response.replace(/\n/g, '<br>')}</div>`;
+            } catch (e) {
+                document.getElementById(loadingId).innerText = "Error connecting to twin.";
+            }
+            history.scrollTop = history.scrollHeight;
+        }
     </script>
 </body>
 </html>
