@@ -1,326 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <title>Academic Digital Twin | Results</title>
-   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <style>
-       :root {
-           --ucf-yellow: #ffcc00;
-           --ucf-bg: #fdfae7;
-       }
-      
-       body {
-           background-color: var(--ucf-bg);
-           font-family: 'Inter', -apple-system, sans-serif;
-           margin: 0;
-           display: flex; flex-direction: column; align-items: center;
-           min-height: 100vh; padding: 40px 20px;
-       }
+    <meta charset="UTF-8">
+    <title>Academic Digital Twin | Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --ucf-yellow: #ffcc00;
+            --ucf-bg: #fdfae7;
+        }
+       
+        body {
+            background-color: var(--ucf-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+        }
 
-       .logo-top-left { position: fixed; top: 30px; left: 20px; width: 80px; z-index: 1000; }
+        .logo-top-left { position: fixed; top: 30px; left: 20px; width: 80px; z-index: 1000; }
 
-       .dashboard-container {
-           display: grid; grid-template-columns: 450px 450px;
-           gap: 30px; margin-top: 20px; max-width: 1000px;
-       }
+        .dashboard-container {
+            display: grid; grid-template-columns: 450px 450px;
+            gap: 30px; margin-top: 20px; max-width: 1000px;
+        }
 
-       .info-card {
-           background: var(--ucf-yellow); padding: 2.5rem;
-           border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-           text-align: center;
-       }
+        .info-card {
+            background: var(--ucf-yellow); padding: 2.5rem;
+            border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
 
-       .advice-card {
-           background: #fff; padding: 2.5rem; border-radius: 40px;
-           box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 2px solid var(--ucf-yellow);
-           display: flex; flex-direction: column;
-       }
+        .advice-card {
+            background: #fff; padding: 2.5rem; border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 2px solid var(--ucf-yellow);
+            display: flex; flex-direction: column;
+        }
 
-       .gpa-big { font-size: 5.5rem; font-weight: 900; margin: 5px 0; color: #000; line-height: 1; }
-      
-       .stat-label {
-           text-transform: uppercase; letter-spacing: 1px;
-           font-size: 0.85rem; font-weight: bold; color: #333;
-       }
+        .gpa-big { font-size: 5.5rem; font-weight: 900; margin: 5px 0; color: #000; line-height: 1; }
+       
+        .stat-label {
+            text-transform: uppercase; letter-spacing: 1px;
+            font-size: 0.85rem; font-weight: bold; color: #333;
+        }
 
-       .metrics-row {
-           display: flex; justify-content: space-around; margin: 20px 0;
-           padding: 15px 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1);
-       }
+        .metrics-row {
+            display: flex; justify-content: space-around; margin: 20px 0;
+            padding: 15px 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
 
-       .metric-value { font-size: 1.5rem; font-weight: 800; }
+        .metric-value { font-size: 1.5rem; font-weight: 800; }
 
-       .action-buttons {
-           display: flex; justify-content: center; width: 100%;
-           gap: 20px; margin-top: 40px; align-items: center;
-       }
+        .battery-container {
+            width: 40px; height: 80px; border: 3px solid #333;
+            border-radius: 5px; position: relative; margin: 10px auto; background: #fff;
+        }
+       
+        .battery-container::before {
+            content: ''; position: absolute; top: -7px; left: 50%;
+            transform: translateX(-50%); width: 15px; height: 4px;
+            background: #333; border-radius: 3px 3px 0 0;
+        }
 
-       .home-btn, .chat-btn {
-           padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold;
-           transition: 0.3s; cursor: pointer; border: none; font-size: 1rem;
-           background: #000; color: var(--ucf-yellow);
-       }
-      
-       .home-btn:hover, .chat-btn:hover { background: #333; }
+        .battery-level { position: absolute; bottom: 0; width: 100%; border-radius: 2px; transition: height 0.5s ease; }
 
-       .battery-container {
-           width: 40px; height: 80px; border: 3px solid #333;
-           border-radius: 5px; position: relative; margin: 10px auto; background: #fff;
-       }
-      
-       .battery-container::before {
-           content: ''; position: absolute; top: -7px; left: 50%;
-           transform: translateX(-50%); width: 15px; height: 4px;
-           background: #333; border-radius: 3px 3px 0 0;
-       }
+        .caution-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            background: #fff5f5;
+            color: #b30000;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+            border: 1.5px solid #ff4d4d;
+            animation: glowPulse 1.8s infinite alternate;
+        }
 
-       .battery-level { position: absolute; bottom: 0; width: 100%; border-radius: 2px; transition: height 0.5s ease; }
+        @keyframes glowPulse {
+            from { box-shadow: 0 0 5px rgba(255, 77, 77, 0.2); }
+            to { box-shadow: 0 0 12px rgba(255, 0, 0, 0.5); }
+        }
 
-       .caution-box {
-           margin-top: 15px; padding: 12px; border-radius: 15px;
-           background: #fff5f5; color: #b30000; font-weight: 600;
-           text-align: center; font-size: 0.9rem; border: 1.5px solid #ff4d4d;
-           animation: glowPulse 1.8s infinite alternate;
-       }
+        .action-buttons {
+            display: flex; justify-content: center; width: 100%;
+            gap: 20px; margin-top: 40px; align-items: center;
+        }
 
-       @keyframes glowPulse {
-           from { box-shadow: 0 0 5px rgba(255, 77, 77, 0.2); }
-           to { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
-       }
+        .home-btn, .chat-btn {
+            padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold;
+            transition: 0.3s; cursor: pointer; border: none; font-size: 1rem;
+            background: #000; color: var(--ucf-yellow);
+        }
 
-       .mascot-container {
-           position: fixed; bottom: 10px; right: 30px;
-           display: flex; flex-direction: column; align-items: center; z-index: 1001;
-           animation: floatAndRotate 4s ease-in-out infinite;
-       }
+        .mascot-container {
+            position: fixed; bottom: 10px; right: 30px;
+            display: flex; flex-direction: column; align-items: center; z-index: 1001;
+            animation: floatAndRotate 4s ease-in-out infinite;
+        }
 
-       @keyframes floatAndRotate {
-           0% { transform: translateY(0px); }
-           50% { transform: translateY(-15px); }
-           100% { transform: translateY(0px); }
-       }
+        @keyframes floatAndRotate {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
 
-       .knightro-img { width: 130px; mix-blend-mode: darken; }
-      
-       .speech-bubble {
-           background: white; border: 3px solid #000; border-radius: 20px;
-           padding: 12px; margin-bottom: 10px; font-weight: bold;
-           max-width: 170px; text-align: center; box-shadow: 5px 5px 0px #000;
-       }
+        .knightro-img { width: 130px; mix-blend-mode: darken; }
+       
+        .speech-bubble {
+            background: white; border: 3px solid #000; border-radius: 20px;
+            padding: 12px; margin-bottom: 10px; font-weight: bold;
+            max-width: 170px; text-align: center; box-shadow: 5px 5px 0px #000;
+        }
 
-       .chat-modal {
-           display: none; position: fixed; top: 10px; right: 10px;
-           width: 350px; background: white; border-radius: 25px;
-           box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 2.5px solid #000;
-           flex-direction: column; z-index: 1002; overflow: hidden;
-       }
+        .chat-modal {
+            display: none; position: fixed; top: 10px; right: 10px;
+            width: 350px; background: white; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 2.5px solid #000;
+            flex-direction: column; z-index: 1002; overflow: hidden;
+        }
 
-       .chat-header { background: #000; color: var(--ucf-yellow); padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
-       .chat-history { height: 320px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; }
-       .msg { padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; max-width: 85%; }
-       .user-msg { background: var(--ucf-yellow); align-self: flex-end; }
-       .ai-msg { background: #eee; align-self: flex-start; }
-       .chat-input-container { display: flex; padding: 12px; border-top: 1px solid #ddd; }
-       .chat-input-container input { flex: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; outline: none; }
-   </style>
+        .chat-header { background: #000; color: var(--ucf-yellow); padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
+        .chat-history { height: 320px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; }
+        .msg { padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; max-width: 85%; }
+        .user-msg { background: var(--ucf-yellow); align-self: flex-end; }
+        .ai-msg { background: #eee; align-self: flex-start; }
+        .chat-input-container { display: flex; padding: 12px; border-top: 1px solid #ddd; }
+        .chat-input-container input { flex: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; outline: none; }
+    </style>
 </head>
 <body>
-   {% set current = student.current_gpa|float %}
-   {% set projected = prediction.projected_gpa|float %}
-   {% set work_hrs = student.work_hours|float %}
-   {% set sleep_hrs = student.sleep_hours|float %}
+    {% set current = student.current_gpa|float %}
+    {% set projected = prediction.projected_gpa|float %}
+    {% set work_hrs = student.work_hours|float %}
+    {% set sleep_hrs = student.sleep_hours|float %}
 
-   <img src="{{ url_for('static', filename='pegasus.png') }}" class="logo-top-left">
+    <img src="{{ url_for('static', filename='pegasus.png') }}" class="logo-top-left">
 
-   <h1 style="font-weight: 800; margin-bottom: 5px;">Simulation Complete!</h1>
-   <p style="color: #666; margin-bottom: 30px;">Checking out the academic forecast for <strong>{{ student.student_name }}</strong></p>
+    <h1 style="font-weight: 800; margin-bottom: 5px;">Simulation Complete!</h1>
+    <p style="color: #666; margin-bottom: 30px;">Checking out the academic forecast for <strong>{{ student.student_name }}</strong></p>
 
-   <div class="dashboard-container">
-       <div class="info-card">
-           <span class="stat-label">Current Forecast</span>
-           <div class="gpa-big">{{ prediction.projected_gpa }}</div>
-           <p style="font-weight: bold;">Range: {{ prediction.projected_gpa_range }}</p>
+    <div class="dashboard-container">
+        <div class="info-card">
+            <span class="stat-label">Current Forecast</span>
+            <div class="gpa-big">{{ prediction.projected_gpa }}</div>
+            <p style="font-weight: bold;">Range: {{ prediction.projected_gpa_range }}</p>
 
-           <div class="metrics-row">
-               <div style="text-align: center;">
-                   <span class="stat-label">Academic Risk</span><br>
-                   <span class="metric-value">{{ prediction.risk_score }}%</span>
-                   <div style="width: 120px; height: 60px; margin: 10px auto 0;">
-                       <canvas id="riskGauge"></canvas>
-                   </div>
-               </div>
-               <div style="text-align: center;">
-                   <span class="stat-label">Burnout Probability</span><br>
-                   <span class="metric-value">{{ prediction.burnout_probability }}%</span>
-                   <div class="battery-container">
-                       <div id="batteryLevel" class="battery-level"></div>
-                   </div>
-               </div>
-           </div>
-       </div>
+            <div class="metrics-row">
+                <div style="text-align: center;">
+                    <span class="stat-label">Academic Risk</span><br>
+                    <span class="metric-value">{{ prediction.risk_score }}%</span>
+                    <div style="width: 120px; height: 60px; margin: 10px auto 0;">
+                        <canvas id="riskGauge"></canvas>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <span class="stat-label">Burnout Probability</span><br>
+                    <span class="metric-value">{{ prediction.burnout_probability }}%</span>
+                    <div class="battery-container">
+                        <div id="batteryLevel" class="battery-level"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-       <div class="advice-card">
-           <h3 style="margin-top: 0; color: #000;">What Your Digital Twin Thinks:</h3>
-           
-           <div style="line-height: 1.6; color: #444; margin-bottom: 15px;">
-               <p>
-                   {% if projected > current %}
-                       <span style="color: #22c55e;">✅</span> <strong>Insight:</strong> Your Digital Twin is showing upward momentum! 
-                       {% if projected < 3.0 %}
-                           You're making moves in the right direction. Keep this energy up to hit that 3.0 goal line.
-                       {% else %}
-                           You’re absolutely crushing it! Scaling your grades while keeping your academic foundation solid.
-                       {% endif %}
-                   {% elif projected < current %}
-                       <span style="color: #ef4444;">⚠️</span> <strong>Insight:</strong> Your projected GPA is looking a little lower than where you started. 
-                       {% if projected < 3.0 %}
-                           Falling below a 3.0 might knock you out of the running for top-tier roles. Your Twin is waving a yellow flag—it’s time to pivot your strategy.
-                       {% else %}
-                           You’re still safe above a 3.0, but this downward trend means your course load is hitting harder than expected.
-                       {% endif %}
-                   {% else %}
-                       ⚖️ <strong>Insight:</strong> You're holding steady! Everything is consistent with your usual pace.
-                   {% endif %}
-               </p>
+        <div class="advice-card">
+            <h3 style="margin-top: 0; color: #000;">What Your Digital Twin Thinks:</h3>
+            
+            <div style="line-height: 1.6; color: #444; margin-bottom: 15px;">
+                <p>
+                    {% if projected > current %}
+                        <span style="color: #22c55e;">✅</span> <strong>Insight:</strong> Your Digital Twin is showing upward momentum!
+                    {% elif projected < current %}
+                        <span style="color: #ef4444;">⚠️</span> <strong>Insight:</strong> Your projected GPA is lower than where you started.
+                    {% else %}
+                        ⚖️ <strong>Insight:</strong> You're holding steady!
+                    {% endif %}
+                </p>
+            </div>
 
-               {% if projected >= 3.0 %}
-               <p>
-                   <strong>The Pro Tier:</strong> Keeping things above a 3.0 is a major win. That’s a key benchmark for recruiters.
-               </p>
-               {% endif %}
-           </div>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+            
+            <p style="font-weight: bold; font-size: 0.9rem; text-transform: uppercase;">The Breakdown:</p>
+            <ul style="padding-left: 20px; margin: 0; line-height: 1.8;">
+                <li>
+                    <strong>Work-Life Balance:</strong>
+                    {% if work_hrs > 15 %}
+                        Clocking {{ work_hrs }} hours/week is a massive load.
+                    {% else %}
+                        Looking good! Your work hours seem manageable.
+                    {% endif %}
+                </li>
+                <li>
+                    <strong>Sleep Quality:</strong>
+                    {% if sleep_hrs >= 7 %}
+                        You're averaging {{ sleep_hrs }} hours of sleep. This is perfect for keeping your Twin functioning at 100%.
+                    {% else %}
+                        Only {{ sleep_hrs }} hours of sleep? That's definitely dragging down your focus.
+                    {% endif %}
+                </li>
+                <li>
+                    <strong>GPA Trajectory:</strong>
+                    {% if projected > current %}
+                        Growth Mode! Your Digital Twin is looking strong.
+                    {% else %}
+                        Maintenance Mode. Keep an eye on any potential slides.
+                    {% endif %}
+                </li>
+            </ul>
 
-           <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-           
-           <p style="font-weight: bold; font-size: 0.9rem; text-transform: uppercase;">The Breakdown:</p>
-           <ul style="padding-left: 20px; margin: 0; line-height: 1.8;">
-               <li>
-                   <strong>Work-Life Balance:</strong>
-                   {% if work_hrs > 15 %}
-                       Clocking {{ work_hrs }} hours/week is a massive load. If grades start to slip, think about dropping those hours.
-                   {% else %}
-                       Looking good! Your work hours seem manageable for now.
-                   {% endif %}
-               </li>
-               <li>
-                   <strong>Sleep Quality:</strong>
-                   {% if sleep_hrs >= 7 %}
-                       <span style="color: #22c55e;">✅</span> You're averaging {{ sleep_hrs }} hours of sleep. This is perfect for keeping your Digital Twin (and your brain) functioning at 100%.
-                   {% else %}
-                       <span style="color: #ef4444;">⚠️</span> Only {{ sleep_hrs }} hours of sleep? That's definitely dragging down your focus. Your Twin predicts you'll burn out much faster if you don't hit that 7+ hour mark.
-                   {% endif %}
-               </li>
-               <li>
-                   <strong>GPA Trajectory:</strong>
-                   {% if projected > current %}
-                       Growth Mode! Your Digital Twin is expanding and looking strong.
-                   {% else %}
-                       Maintenance Mode. Watch out for any further sliding.
-                   {% endif %}
-               </li>
-           </ul>
+            {% if warning %}
+            <div class="caution-box">
+                 ⚠️ {{ warning }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
 
-           {% if warning %}
-           <div class="caution-box">
-                ⚠️ {{ warning }}
-           </div>
-           {% endif %}
-       </div>
-   </div>
+    <div class="action-buttons">
+        <a href="/simulator" class="home-btn">RE-INITIALIZE SIMULATION</a>
+        <button onclick="toggleChat()" class="chat-btn">TALK TO YOUR TWIN!</button>
+    </div>
 
-   <div class="action-buttons">
-       <a href="/simulator" class="home-btn">RE-INITIALIZE SIMULATION</a>
-       <button onclick="toggleChat()" class="chat-btn">TALK TO YOUR TWIN!</button>
-   </div>
+    <div id="chat-modal" class="chat-modal">
+        <div class="chat-header">
+            <span>Digital Twin Advisor</span>
+            <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="chat-history" class="chat-history">
+            <div class="msg ai-msg">Yo {{ student.student_name }}! How can I help you tweak the plan?</div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="Ask away..." onkeypress="handleKeyPress(event)">
+        </div>
+    </div>
 
-   <div id="chat-modal" class="chat-modal">
-       <div class="chat-header">
-           <span>Digital Twin Advisor</span>
-           <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
-       </div>
-       <div id="chat-history" class="chat-history">
-           <div class="msg ai-msg">Yo {{ student.student_name }}! How can I help you tweak the plan?</div>
-       </div>
-       <div class="chat-input-container">
-           <input type="text" id="user-input" placeholder="Ask away..." onkeypress="handleKeyPress(event)">
-       </div>
-   </div>
+    <div class="mascot-container">
+        <div class="speech-bubble">
+            {% if projected >= 3.5 %}
+                "Charge On! That GPA is pure gold."
+            {% elif projected >= 2.6 %}
+                "Solid work, Knight. You're holding it down!"
+            {% else %}
+                "Let's hit the books and bounce back!"
+            {% endif %}
+        </div>
+        <img src="{{ url_for('static', filename='knightro.png') }}" class="knightro-img">
+    </div>
 
-   <div class="mascot-container">
-       <div class="speech-bubble">
-           {% if projected >= 3.5 %}
-               "Charge On! That GPA is pure gold."
-           {% elif projected >= 2.6 %}
-               "Solid work, Knight. You're holding it down!"
-           {% else %}
-               "Let's hit the books and bounce back!"
-           {% endif %}
-       </div>
-       <img src="{{ url_for('static', filename='knightro.png') }}" class="knightro-img">
-   </div>
+    <script>
+        const studentData = {{ student | tojson | safe }};
+        const predictionData = {{ prediction | tojson | safe }};
 
-   <script>
-    const studentData = {{ student | tojson | safe }};
-    const predictionData = {{ prediction | tojson | safe }};
+        const batteryFill = document.getElementById('batteryLevel');
+        const burnout = parseFloat(predictionData.burnout_probability);
+        batteryFill.style.height = `${burnout}%`;
+        batteryFill.style.backgroundColor = burnout > 60 ? '#ef4444' : (burnout > 30 ? '#f59e0b' : '#22c55e');
 
-    const batteryFill = document.getElementById('batteryLevel');
-    const burnout = parseFloat(predictionData.burnout_probability);
-    batteryFill.style.height = `${burnout}%`;
-    batteryFill.style.backgroundColor = burnout > 60 ? '#ef4444' : (burnout > 30 ? '#f59e0b' : '#22c55e');
+        const ctx = document.getElementById('riskGauge').getContext('2d');
+        const risk = parseFloat(predictionData.risk_score);
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [risk, 100 - risk],
+                    backgroundColor: [risk > 60 ? '#ef4444' : (risk > 30 ? '#f59e0b' : '#22c55e'), '#e5e7eb'],
+                    borderWidth: 0
+                }]
+            },
+            options: { circumference: 180, rotation: 270, cutout: '75%', plugins: { tooltip: { enabled: false } }, maintainAspectRatio: false }
+        });
 
-    const ctx = document.getElementById('riskGauge').getContext('2d');
-    const risk = parseFloat(predictionData.risk_score);
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: [risk, 100 - risk],
-                backgroundColor: [risk > 60 ? '#ef4444' : (risk > 30 ? '#f59e0b' : '#22c55e'), '#e5e7eb'],
-                borderWidth: 0
-            }]
-        },
-        options: { circumference: 180, rotation: 270, cutout: '75%', plugins: { tooltip: { enabled: false } }, maintainAspectRatio: false }
-    });
+        const projectedGpa = parseFloat(predictionData.projected_gpa);
+        let confettiColors = (projectedGpa >= 3.0) 
+            ? ['#22c55e', '#ffcc00', '#000000'] 
+            : ['#ef4444', '#000000'];
 
-    const projectedGpa = parseFloat(predictionData.projected_gpa);
-    let confettiColors = (projectedGpa >= 3.0) 
-        ? ['#22c55e', '#ffcc00', '#000000'] 
-        : ['#ef4444', '#000000'];
+        var end = Date.now() + 1500;
+        (function frame() {
+            confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: confettiColors });
+            confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: confettiColors });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        }());
 
-    var end = Date.now() + 1500;
-    (function frame() {
-        confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: confettiColors });
-        confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: confettiColors });
-        if (Date.now() < end) requestAnimationFrame(frame);
-    }());
+        function toggleChat() {
+            const modal = document.getElementById('chat-modal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
 
-    function toggleChat() {
-        const modal = document.getElementById('chat-modal');
-        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
 
-    function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
-
-    async function sendMessage() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        if (!text) return;
-        const history = document.getElementById('chat-history');
-        history.innerHTML += `<div class="msg user-msg">${text}</div>`;
-        input.value = '';
-        try {
-            const res = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: text, student: studentData, prediction: predictionData })
-            });
-            const data = await res.json();
-            history.innerHTML += `<div class="msg ai-msg">${data.response}</div>`;
-            history.scrollTop = history.scrollHeight;
-        } catch (e) { console.error(e); }
-    }
-   </script>
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const history = document.getElementById('chat-history');
+            history.innerHTML += `<div class="msg user-msg">${text}</div>`;
+            input.value = '';
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: text, student: studentData, prediction: predictionData })
+                });
+                const data = await res.json();
+                history.innerHTML += `<div class="msg ai-msg">${data.response}</div>`;
+                history.scrollTop = history.scrollHeight;
+            } catch (e) { console.error(e); }
+        }
+    </script>
 </body>
 </html>
