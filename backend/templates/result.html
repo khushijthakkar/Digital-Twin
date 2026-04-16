@@ -168,28 +168,12 @@
                <p>
                    {% if projected > current %}
                        <span style="color: #22c55e;">✅</span> <strong>Insight:</strong> Your Digital Twin is showing upward momentum! 
-                       {% if projected < 3.0 %}
-                           You're making moves in the right direction. Keep this energy up to hit that 3.0 goal line.
-                       {% else %}
-                           You’re absolutely crushing it! Scaling your grades while keeping your academic foundation solid.
-                       {% endif %}
                    {% elif projected < current %}
-                       <span style="color: #ef4444;">⚠️</span> <strong>Insight:</strong> Your projected GPA is looking a little lower than where you started. 
-                       {% if projected < 3.0 %}
-                           Falling below a 3.0 might knock you out of the running for top-tier roles. Your Twin is waving a yellow flag—it’s time to pivot your strategy.
-                       {% else %}
-                           You’re still safe above a 3.0, but this downward trend means your course load is hitting harder than expected.
-                       {% endif %}
+                       <span style="color: #ef4444;">⚠️</span> <strong>Insight:</strong> Heads up—your projected GPA is looking a little lower than where you started. 
                    {% else %}
-                       ⚖️ <strong>Insight:</strong> You're holding steady! Everything is consistent with your usual pace.
+                       ⚖️ <strong>Insight:</strong> You're holding steady! Everything is looking consistent with your usual pace.
                    {% endif %}
                </p>
-
-               {% if projected >= 3.0 %}
-               <p>
-                   <strong>The Pro Tier:</strong> Keeping things above a 3.0 is a major win. That’s a key benchmark for recruiters.
-               </p>
-               {% endif %}
            </div>
 
            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
@@ -199,25 +183,25 @@
                <li>
                    <strong>Work-Life Balance:</strong>
                    {% if work_hrs > 15 %}
-                       Clocking {{ work_hrs }} hours/week is a massive load. If grades start to slip, think about dropping those hours.
+                       You're clocking {{ work_hrs }} hours/week. If grades slip, think about dropping those hours.
                    {% else %}
-                       Looking good! Your work hours seem manageable for now.
+                       Looking good! Your schedule seems manageable for now.
                    {% endif %}
                </li>
                <li>
                    <strong>Sleep Quality:</strong>
                    {% if sleep_hrs >= 7 %}
-                       <span style="color: #22c55e;">You're averaging {{ sleep_hrs }} hours of sleep. This is perfect for keeping your Digital Twin functioning at 100%.</span>
+                       You're averaging {{ sleep_hrs }} hours of sleep. This is perfect for keeping your Digital Twin functioning at 100%.
                    {% else %}
-                       <span style="color: #ef4444;">Only {{ sleep_hrs }} hours of sleep? That's definitely dragging down your focus. Your Twin predicts you'll burn out much faster.</span>
+                       Only {{ sleep_hrs }} hours of sleep? That's definitely dragging down your focus. Your Twin predicts you'll burn out faster.
                    {% endif %}
                </li>
                <li>
                    <strong>GPA Trajectory:</strong>
                    {% if projected > current %}
-                       Growth Mode! Your Digital Twin is expanding and looking strong.
+                       You're in Growth Mode! Your Digital Twin is looking strong.
                    {% else %}
-                       Maintenance Mode. Watch out for any further sliding.
+                       You're in Maintenance Mode. Keep an eye on any potential slides.
                    {% endif %}
                </li>
            </ul>
