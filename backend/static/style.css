@@ -1,0 +1,168 @@
+:root {
+    --ucf-gold: #FFC904;
+    --ucf-black: #000000;
+    --dark-grey: #373737;
+    --light-grey: #f4f4f4;
+    --bg-cream: #FFF9E5; /* Matches the background in your screenshot */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-cream);
+    color: var(--ucf-black);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.pill-btn {
+    background-color: var(--ucf-gold);
+    color: var(--ucf-black);
+    padding: 8px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-right: 10px;
+    transition: transform 0.2s;
+}
+
+.pill-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Main Content */
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 50px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+h1 strong {
+    font-weight: 900;
+}
+
+/* Central Card */
+.info-card {
+    background-color: var(--ucf-gold);
+    max-width: 700px;
+    padding: 60px 40px;
+    border-radius: 30px;
+    margin: 0 auto 40px auto;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.info-card p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 500;
+    color: var(--ucf-black);
+}
+
+/* Survey Button */
+.cta-btn {
+    display: inline-block;
+    background-color: var(--ucf-gold);
+    color: var(--ucf-black);
+    padding: 15px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+    background-color: var(--ucf-black);
+    color: var(--ucf-gold);
+}
+
+/* This controls the "Box" the logo sits in */
+.pegasus-corner {
+    position: fixed;
+    bottom: 10px;    /* Smaller number = closer to the bottom edge */
+    right: 10px;     /* Smaller number = closer to the right edge */
+    z-index: 1000;   /* Keeps it on top of other elements */
+    pointer-events: none; /* Allows you to click things 'under' the logo if needed */
+}
+
+/* This controls the actual Image size */
+.logo {
+    width: 80px;     /* Adjust this (e.g., 60px or 100px) until it looks right to you */
+    height: auto;    /* Keeps the proportions perfect */
+    opacity: 0.8;    /* Makes it slightly transparent so it's not distracting */
+}
+/* Survey Specific Styles */
+.survey-container {
+    padding: 40px 10%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+fieldset {
+    border: 2px solid var(--ucf-gold);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.05); /* Subtle overlay */
+}
+
+legend {
+    font-weight: bold;
+    color: var(--ucf-gold);
+    padding: 0 10px;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input[type="number"], select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: white;
+}
+
+/* Make sliders look "UCF Gold" */
+input[type="range"] {
+    accent-color: var(--ucf-gold);
+    cursor: pointer;
+}
+
+.toggle-group {
+    display: flex;
+    gap: 20px;
+    font-weight: bold;
+}
