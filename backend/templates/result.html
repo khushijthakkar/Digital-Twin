@@ -166,12 +166,12 @@
         </div>
 
         <div class="advice-card">
-            <h3 style="margin-top: 0; color: #000;">What Your Digital Twin Thinks:</h3>
+            <h3 style="margin-top: 0; color: #000;">Your Optimal Digital Twin Advice:</h3>
             
             <div style="line-height: 1.6; color: #444; margin-bottom: 15px;">
                 <p>
                     {% if projected > current %}
-                        <span style="color: #22c55e;">✅</span> <strong>Insight:</strong> Your Digital Twin is showing upward momentum!
+                        <span style="color: #22c55e;">✅</span> <strong>Insight:</strong> Your GPA is showing upward momentum!
                     {% elif projected < current %}
                         <span style="color: #ef4444;">⚠️</span> <strong>Insight:</strong> Your projected GPA is lower than where you started.
                     {% else %}
@@ -205,7 +205,7 @@
                     {% if projected > current %}
                         Growth Mode! Your Digital Twin is looking strong.
                     {% else %}
-                        Maintenance Mode. Keep an eye on any potential slides.
+                        Maintenance Mode. Keep an eye on any potential obstacles.
                     {% endif %}
                 </li>
             </ul>
@@ -229,7 +229,7 @@
             <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
         </div>
         <div id="chat-history" class="chat-history">
-            <div class="msg ai-msg">Yo {{ student.student_name }}! How can I help you tweak the plan?</div>
+            <div class="msg ai-msg">Hi {{ student.student_name }}! Ready to Charge On? Let's look at the stats and see how we can optimize your semester. Where would you like to start?</div>
         </div>
         <div class="chat-input-container">
             <input type="text" id="user-input" placeholder="Ask away..." onkeypress="handleKeyPress(event)">
@@ -239,11 +239,11 @@
     <div class="mascot-container">
         <div class="speech-bubble">
             {% if projected >= 3.5 %}
-                "Charge On! That GPA is pure gold."
+                "Charge On! That's a golden GPA! You're shining brighter than a sunny day at Reflection Pond."
             {% elif projected >= 2.6 %}
-                "Solid work, Knight. You're holding it down!"
+                "Solid work, Knight. Holding steady like the defense line at the Bounce House!"
             {% else %}
-                "Let's hit the books and bounce back!"
+                "Don't worry, everyone could use a study session at John C. Hitt Library. Let’s hit the books soon!"
             {% endif %}
         </div>
         <img src="{{ url_for('static', filename='knightro.png') }}" class="knightro-img">
